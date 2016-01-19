@@ -1,0 +1,29 @@
+<form<?php if ($this->action): ?> action="<?php echo $this->action; ?>"<?php endif; ?> id="tl_bn_search_form" method="post" class="bn-search-form"> 
+     <?php if ($this->headline): ?>
+      <div class="headline">
+      <<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>      
+      </div>
+    <?php endif; ?>   
+      <input type="hidden" name="FORM_SUBMIT" value="tl_bn_search_form">
+      <input type="hidden" name="distance" value="15">
+      <input type="hidden" name="leistungen" value="">
+      <input type="hidden" name="medien" value="">
+      <div class="row">
+      	<div class="col-md-10">
+		    <div class="form-group">
+				<label class="sr-only">Standort:</label>
+				<input type="text" placeholder="PLZ oder Ort" class="form-control" name="plzcity" id="plzcity" value="<?php echo $this->plzcity; ?>">
+			</div><!--formgroup-->
+			<div class="form-group">
+				<label><input type="checkbox" class="" value="1" name="only_open" <?php if($this->only_open == 1) echo 'checked'; ?>> nur geöffnete Bibliotheken anzeigen</label>
+			</div><!--formgroup-->
+		</div>
+		<div class="col-md-2">
+			<div class="form-group">	
+	          <button type="submit" class="btn-u">suchen</button>  
+			</div><!--formgroup-->	
+		</div>
+
+	</div><!--row-->	
+
+</form>

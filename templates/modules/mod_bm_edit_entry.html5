@@ -1,0 +1,508 @@
+<div class="<?php echo $this->class; ?> container-fluid"<?php echo $this->cssID; ?>>
+<form<?php if ($this->action): ?> action="<?php echo $this->action; ?>"<?php endif; ?> id="tl_bn_search_form" method="post" class="bn-search-form" enctype="multipart/form-data">
+      <input type="hidden" name="FORM_SUBMIT" value="tl_bn_edit_entry">
+	<div class="tab-v1">
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-toggle="tab" href="#Eigenschaften" class="pd"><i class="icon-info"></i> Eigenschaften</a></li>
+			<li><a data-toggle="tab" href="#Bilder" class="pd"><i class="fa fa-file-image-o"></i> Bilder</a></li>
+			<li><a data-toggle="tab" href="#Adressdaten" class="pd"><i class="fa fa-envelope-o"></i> Adressdaten</a></li>
+			<li><a data-toggle="tab" href="#Kontakt" class="pd"><i class="fa fa-user"></i> Kontakt</a></li>
+			<li><a data-toggle="tab" href="#Oeffnungszeiten" class="pd"><i class="fa fa-clock-o"></i> Oeffnungszeiten</a></li>
+			<li><a data-toggle="tab" href="#Medien" class="pd"><i class="fa fa-book"></i> Medien</a></li>
+			<li><a data-toggle="tab" href="#Leistungen" class="pd"><i class="fa fa-puzzle-piece"></i> Leistungen</a></li>
+			<li><a href="detailansicht/lib/<?php echo $this->data['id']; ?>.html" target="_blank"><strong><i class="icon-screen-desktop"></i> Ansicht</strong></a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="Eigenschaften" class="tab-pane fade active in">
+				<!-- <div class=""></div> -->
+				<div class="row margin-top-20">
+				    <div class="col-md-6">
+					    <div class="form-group">
+							<label>Name der Bibliothek (inklusive Ortsname):</label>
+							<input type="text" name="bibliotheksname" value="<?php echo $this->data['bibliotheksname']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Zweigstelle (optional):</label>
+							<input type="text" name="zweigstellenname" value="<?php echo $this->data['zweigstellenname']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Träger:</label>
+							<select name="traeger" class="form-control">
+								<option value=""> -- auswählen -- </option>
+								<?php
+								foreach($this->data['traegerArr'] as $tid => $tname): ?>
+								<option value="<?php echo $tid; ?>" <?php if($this->data['traeger'] == $tid) echo 'selected';?>><?php echo $tname; ?></option>
+								<?php endforeach;?>
+							</select>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Medienbestand:</label>
+							<input type="text" name="medienbestand" value="<?php echo $this->data['medienbestand']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+				</div><!-- row -->
+			</div>
+			<div id="Bilder" class="tab-pane fade">
+				<div class="row margin-top-20">
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Bild 1 (hochladen):</label>
+							<input type="file" name="image_1" value="">
+							<p class="help-block">Es sind folgende Dateitypen erlaubt <?php echo implode(',',$GLOBALS['BN']['BN_IMAGE_UPLOAD_TYPES']);?></p>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+					    <label>Bild 1 (Vorschau):</label>
+					    <?php if(strlen($this->data['image_1']) >0 ): ?>
+					    	<p>
+					    		<?php echo $this->generateImage(\Image::get($this->data['image_1'],300, 200,'proportional'),'','class="img-thumbnail"'); ?>
+					    		<label><input type="checkbox" name="delete_file[]" value="<?php echo $this->data['image_1']; ?>"> löschen</label>
+					    	</p>
+						<?php else: ?>
+							<p>Es ist kein Bild gespeichert</p>
+						<?php endif;?>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+				</div>
+				<div class="row margin-top-20">
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Bild 2 (hochladen):</label>
+							<input type="file" name="image_2" value="">
+							<p class="help-block">Es sind folgende Dateitypen erlaubt <?php echo implode(',',$GLOBALS['BN']['BN_IMAGE_UPLOAD_TYPES']);?></p>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+					    <label>Bild 2 (Vorschau):</label>
+					    <?php if(strlen($this->data['image_2']) >0 ): ?>
+							<p><?php echo $this->generateImage(\Image::get($this->data['image_2'],300, 200,'proportional'),'','class="img-thumbnail"'); ?>
+							<label><input type="checkbox" name="delete_file[]" value="<?php echo $this->data['image_2']; ?>"> löschen</label>
+							</p>
+						<?php else: ?>
+							<p>Es ist kein Bild gespeichert</p>
+						<?php endif;?>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+				</div>
+				<div class="row margin-top-20">
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Bild 3 (hochladen):</label>
+							<input type="file" name="image_3" value="">
+							<p class="help-block">Es sind folgende Dateitypen erlaubt <?php echo implode(',',$GLOBALS['BN']['BN_IMAGE_UPLOAD_TYPES']);?></p>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+					    <label>Bild 3 (Vorschau):</label>
+					    <?php if(strlen($this->data['image_3']) >0 ): ?>
+							<p>
+							<?php echo $this->generateImage(\Image::get($this->data['image_3'],300, 200,'proportional'),'','class="img-thumbnail"'); ?>
+							<label><input type="checkbox" name="delete_file[]" value="<?php echo $this->data['image_3']; ?>"> löschen</label>
+							</p>
+						<?php else: ?>
+							<p>Es ist kein Bild gespeichert</p>
+						<?php endif;?>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+				</div>
+				<div class="row margin-top-20">
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Bild 4 (hochladen):</label>
+							<input type="file" name="image_4" value="">
+							<p class="help-block">Es sind folgende Dateitypen erlaubt <?php echo implode(',',$GLOBALS['BN']['BN_IMAGE_UPLOAD_TYPES']);?></p>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+					    <label>Bild 4 (Vorschau):</label>
+					    <?php if(strlen($this->data['image_4']) >0 ): ?>
+							<p>
+							<?php echo $this->generateImage(\Image::get($this->data['image_4'],300, 200,'proportional'),'','class="img-thumbnail"'); ?>
+							<label><input type="checkbox" name="delete_file[]" value="<?php echo $this->data['image_4']; ?>"> löschen</label>
+							</p>
+						<?php else: ?>
+							<p>Es ist kein Bild gespeichert</p>
+						<?php endif;?>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+				</div>
+				<div class="row margin-top-20">
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Bild 5 (hochladen):</label>
+							<input type="file" name="image_5" value="">
+							<p class="help-block">Es sind folgende Dateitypen erlaubt <?php echo implode(',',$GLOBALS['BN']['BN_IMAGE_UPLOAD_TYPES']);?></p>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+					    <label>Bild 5 (Vorschau):</label>
+					    <?php if(strlen($this->data['image_5']) >0 ): ?>
+							<p>
+								<?php echo $this->generateImage(\Image::get($this->data['image_5'],300, 200,'proportional'),'','class="img-thumbnail"'); ?>
+								<label><input type="checkbox" name="delete_file[]" value="<?php echo $this->data['image_5']; ?>"> löschen</label>
+							</p>
+						<?php else: ?>
+							<p>Es ist kein Bild gespeichert</p>
+						<?php endif;?>
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+				</div>
+			</div>
+			<div id="Adressdaten" class="tab-pane fade">
+				<div class="row margin-top-20">
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Stra&szlig;e:</label>
+							<input type="text" name="strasse" value="<?php echo $this->data['strasse']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Hausnummer:</label>
+							<input type="text" name="hausnummer" value="<?php echo $this->data['hausnummer']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+				</div><!-- row -->
+				<div class="row">
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>PLZ:</label>
+							<input type="text" name="plz" value="<?php echo $this->data['plz']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Ort:</label>
+							<input type="text" name="ort" value="<?php echo $this->data['ort']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+				</div><!-- row -->
+				<div class="row">
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Gemeinde:</label>
+							<input type="text" name="gemeinde" value="<?php echo $this->data['gemeinde']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Landkreis:</label>
+							<input type="text" name="landkreis" value="<?php echo $this->data['landkreis']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+				</div><!-- row -->
+			</div>
+			<div id="Kontakt" class="tab-pane fade">
+				<div class="row margin-top-20">
+					<div class="col-md-12">
+					    <div class="form-group">
+							<label>Leiter(in):</label>
+							<input type="text" name="leiter_name" value="<?php echo $this->data['leiter_name']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-12 -->
+
+					<div class="col-md-4">
+					    <div class="form-group">
+							<label>Telefon:</label>
+							<input type="text" name="telefon" value="<?php echo $this->data['telefon']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-4 -->
+					<div class="col-md-4">
+					    <div class="form-group">
+							<label>Fax:</label>
+							<input type="text" name="fax" value="<?php echo $this->data['fax']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-4 -->
+					<div class="col-md-4">
+					    <div class="form-group">
+							<label>E-Mail:</label>
+							<input type="text" name="email" value="<?php echo $this->data['email']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-4 -->
+
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Website:</label>
+							<input type="text" name="website" value="<?php echo $this->data['website']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Blog:</label>
+							<input type="text" name="blog" value="<?php echo $this->data['blog']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Onleihe:</label>
+							<input type="text" name="onleihe" value="<?php echo $this->data['onleihe']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+					<div class="col-md-6">
+					    <div class="form-group">
+							<label>Webkatalog:</label>
+							<input type="text" name="webkatalog" value="<?php echo $this->data['webkatalog']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-6 -->
+
+					<div class="col-md-4">
+					    <div class="form-group">
+							<label>Facebook:</label>
+							<input type="text" name="facebook" value="<?php echo $this->data['facebook']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-4 -->
+					<div class="col-md-4">
+					    <div class="form-group">
+							<label>Google+:</label>
+							<input type="text" name="gplus" value="<?php echo $this->data['gplus']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-4 -->
+					<div class="col-md-4">
+					    <div class="form-group">
+							<label>Twitter:</label>
+							<input type="text" name="twitter" value="<?php echo $this->data['twitter']; ?>" class="form-control">
+						</div><!-- form-group -->
+					</div><!-- col-md-4 -->
+				</div><!-- row -->
+			</div>
+			<div id="Oeffnungszeiten" class="tab-pane fade">
+				<div class="row margin-top-20">
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Montag von:</label>
+							<input type="text" name="mo_1_von" value="<?php echo ($this->data['mo_1_von'] == 0)? '': date('H:i',$this->data['mo_1_von']); ?>" class="form-control" placeholder="z.B. 08:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Montag bis:</label>
+							<input type="text" name="mo_1_bis" value="<?php echo ($this->data['mo_1_bis'] == 0)? '': date('H:i',$this->data['mo_1_bis']); ?>" class="form-control" placeholder="z.B. 12:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Montag von:</label>
+							<input type="text" name="mo_2_von" value="<?php echo ($this->data['mo_2_von'] == 0)? '': date('H:i',$this->data['mo_2_von']); ?>" class="form-control" placeholder="z.B. 14:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Montag bis:</label>
+							<input type="text" name="mo_2_bis" value="<?php echo ($this->data['mo_2_bis'] == 0)? '':  date('H:i',$this->data['mo_2_bis']); ?>" class="form-control" placeholder="z.B. 18:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Dienstag von:</label>
+							<input type="text" name="di_1_von" value="<?php echo ($this->data['di_1_von'] == 0)? '': date('H:i',$this->data['di_1_von']); ?>" class="form-control" placeholder="z.B. 08:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Dienstag bis:</label>
+							<input type="text" name="di_1_bis" value="<?php echo ($this->data['di_1_bis'] == 0)? '': date('H:i',$this->data['di_1_bis']); ?>" class="form-control" placeholder="z.B. 12:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Dienstag von:</label>
+							<input type="text" name="di_2_von" value="<?php echo ($this->data['di_2_von'] == 0)? '': date('H:i',$this->data['di_2_von']); ?>" class="form-control" placeholder="z.B. 14:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Dienstag bis:</label>
+							<input type="text" name="di_2_bis" value="<?php echo ($this->data['di_2_bis'] == 0)? '':  date('H:i',$this->data['di_2_bis']); ?>" class="form-control" placeholder="z.B. 18:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+
+
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Mittwoch von:</label>
+							<input type="text" name="mi_1_von" value="<?php echo ($this->data['mi_1_von'] == 0)? '': date('H:i',$this->data['mi_1_von']); ?>" class="form-control" placeholder="z.B. 08:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Mittwoch bis:</label>
+							<input type="text" name="mi_1_bis" value="<?php echo ($this->data['mi_1_bis'] == 0)? '': date('H:i',$this->data['mi_1_bis']); ?>" class="form-control" placeholder="z.B. 12:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Mittwoch von:</label>
+							<input type="text" name="mi_2_von" value="<?php echo ($this->data['mi_2_von'] == 0)? '': date('H:i',$this->data['mi_2_von']); ?>" class="form-control" placeholder="z.B. 14:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Mittwoch bis:</label>
+							<input type="text" name="mi_2_bis" value="<?php echo ($this->data['mi_2_bis'] == 0)? '':  date('H:i',$this->data['mi_2_bis']); ?>" class="form-control" placeholder="z.B. 18:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+
+
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Donnerstag von:</label>
+							<input type="text" name="do_1_von" value="<?php echo ($this->data['do_1_von'] == 0)? '': date('H:i',$this->data['do_1_von']); ?>" class="form-control" placeholder="z.B. 08:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Donnerstag bis:</label>
+							<input type="text" name="do_1_bis" value="<?php echo ($this->data['do_1_bis'] == 0)? '': date('H:i',$this->data['do_1_bis']); ?>" class="form-control" placeholder="z.B. 12:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Donnerstag von:</label>
+							<input type="text" name="do_2_von" value="<?php echo ($this->data['do_2_von'] == 0)? '': date('H:i',$this->data['do_2_von']); ?>" class="form-control" placeholder="z.B. 14:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Donnerstag bis:</label>
+							<input type="text" name="do_2_bis" value="<?php echo ($this->data['do_2_bis'] == 0)? '':  date('H:i',$this->data['do_2_bis']); ?>" class="form-control" placeholder="z.B. 18:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Freitag von:</label>
+							<input type="text" name="fr_1_von" value="<?php echo ($this->data['fr_1_von'] == 0)? '': date('H:i',$this->data['fr_1_von']); ?>" class="form-control" placeholder="z.B. 08:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Freitag bis:</label>
+							<input type="text" name="fr_1_bis" value="<?php echo ($this->data['fr_1_bis'] == 0)? '': date('H:i',$this->data['fr_1_bis']); ?>" class="form-control" placeholder="z.B. 12:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Freitag von:</label>
+							<input type="text" name="fr_2_von" value="<?php echo ($this->data['fr_2_von'] == 0)? '': date('H:i',$this->data['fr_2_von']); ?>" class="form-control" placeholder="z.B. 14:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Freitag bis:</label>
+							<input type="text" name="fr_2_bis" value="<?php echo ($this->data['fr_2_bis'] == 0)? '':  date('H:i',$this->data['fr_2_bis']); ?>" class="form-control" placeholder="z.B. 18:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Samstag von:</label>
+							<input type="text" name="sa_1_von" value="<?php echo ($this->data['sa_1_von'] == 0)? '': date('H:i',$this->data['sa_1_von']); ?>" class="form-control" placeholder="z.B. 08:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Samstag bis:</label>
+							<input type="text" name="sa_1_bis" value="<?php echo ($this->data['sa_1_bis'] == 0)? '': date('H:i',$this->data['sa_1_bis']); ?>" class="form-control" placeholder="z.B. 12:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Samstag von:</label>
+							<input type="text" name="sa_2_von" value="<?php echo ($this->data['sa_2_von'] == 0)? '': date('H:i',$this->data['sa_2_von']); ?>" class="form-control" placeholder="z.B. 14:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Samstag bis:</label>
+							<input type="text" name="sa_2_bis" value="<?php echo ($this->data['sa_2_bis'] == 0)? '':  date('H:i',$this->data['sa_2_bis']); ?>" class="form-control" placeholder="z.B. 18:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+
+
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Sonntag von:</label>
+							<input type="text" name="so_1_von" value="<?php echo ($this->data['so_1_von'] == 0)? '': date('H:i',$this->data['so_1_von']); ?>" class="form-control" placeholder="z.B. 08:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>1. Sonntag bis:</label>
+							<input type="text" name="so_1_bis" value="<?php echo ($this->data['so_1_bis'] == 0)? '': date('H:i',$this->data['so_1_bis']); ?>" class="form-control" placeholder="z.B. 12:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Sonntag von:</label>
+							<input type="text" name="so_2_von" value="<?php echo ($this->data['so_2_von'] == 0)? '': date('H:i',$this->data['so_2_von']); ?>" class="form-control" placeholder="z.B. 14:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-3">
+					    <div class="form-group">
+							<label>2. Sonntag bis:</label>
+							<input type="text" name="so_2_bis" value="<?php echo ($this->data['so_2_bis'] == 0)? '':  date('H:i',$this->data['so_2_bis']); ?>" class="form-control" placeholder="z.B. 18:00">
+						</div><!-- form-group -->
+					</div><!-- col-md-3 -->
+
+					<div class="col-md-12">
+						<label class="">weitere Angaben zu den Öffnungszeiten</label>
+						<textarea class="form-control" rows="2" name="sonst_oeffnungszeiten"><?php echo $this->data['sonst_oeffnungszeiten'];?></textarea>
+					</div>
+
+				</div><!-- row -->
+			</div>
+			<div id="Medien" class="tab-pane fade">
+				<div class="row margin-top-20">
+					<?php foreach($this->data['medienArr'] as $mid => $mname): ?>
+					<div class="col-md-4">
+						<div class="checkbox">
+							<label>
+							<input type="checkbox" name="medien[]" value="<?php echo $mid; ?>" <?php if(in_array($mname, $this->data['medien'])) echo 'checked'; ?> class="checkbox"><?php echo $mname; ?></label>
+						</div>
+					</div><!-- col-md-4 -->
+					<?php endforeach; ?>
+					<div class="col-md-12">
+						<label class="">weitere Angaben zu den Medien</label>
+						<textarea class="form-control" rows="2" name="sonstmedien"><?php echo $this->data['sonstmedien'];?></textarea>
+					</div>
+				</div><!-- row -->
+			</div>
+			<div id="Leistungen" class="tab-pane fade">
+				<div class="row margin-top-20">
+					<?php foreach($this->data['leistungenArr'] as $lid => $lname): ?>
+					<div class="col-md-4">
+						<div class="checkbox">
+							<label class="checkbox">
+							<input type="checkbox" name="leistungen[]" value="<?php echo $lid; ?>" <?php if(in_array($lname, $this->data['leistungen'])) echo 'checked'; ?> class="checkbox"><?php echo $lname; ?></label>
+						</div>
+					</div><!-- col-md-4 -->
+					<?php endforeach; ?>
+					<div class="col-md-12">
+						<label class="">weitere Angaben zu den Leistungen</label>
+						<textarea class="form-control" rows="2" name="sonstleistungen"><?php echo $this->data['sonstleistungen'];?></textarea>
+					</div>
+				</div><!-- row -->
+			</div>
+		</div><!-- .tab-content -->
+	</div><!-- tab-v1 -->
+	<div class="row">
+		<button class="btn-u" type="submit">speichern</button>
+	</div><!-- row -->
+</form>
+
+
+</div>
+<?php echo $this->pagination; ?>

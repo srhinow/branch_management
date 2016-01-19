@@ -1,0 +1,99 @@
+<div class="<?php echo $this->class; ?> "<?php echo $this->cssID; ?>>
+	<section id="karte" style="width: 100%; height:500px;"></section>
+	<script src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
+<script>
+	$(function(){
+
+   		//default positon (Hannover)
+   		var latitude = <?php echo $this->geodata['lat']; ?>;
+   		var longitude = <?php echo $this->geodata['lon']; ?>;
+   		var zoom_level = <?php echo $this->zoomlevel; ?>;
+
+   		function showMap(lat, lon, zl)
+   		{
+			var optionen = {
+				zoom: zl,
+				center: new google.maps.LatLng(lat, lon),
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+			};
+
+	    	karte = new google.maps.Map($('#karte')[0],optionen);
+
+
+		    <?php
+		    //marker setzen
+		    foreach($this->libs as $lib): ?>
+				marker = new google.maps.Marker(
+		       {
+				   map: karte,
+				   <?php if($lib['openstatus'] == 'open'): ?>
+				   icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+				   <?php elseif($lib['openstatus'] == 'close'): ?>
+				   icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+				   <?php else: ?>
+				   icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+				   <?php endif; ?>
+				   position: new google.maps.LatLng
+				   (
+				       <?php echo $lib['lat']; ?>,
+				       <?php echo $lib['lon']; ?>
+				   )
+	           });
+
+	            marker.contentString = "<h3><?php echo $lib['name'];?></h3><p>aktuell offen: <?php echo ($lib['openstatus']=='close') ? "nein":"ja"; ?><br><?php echo $lib['plz'];?> <?php echo $lib['ort'];?><br><?php echo $lib['strasse'];?> <?php echo $lib['hnr'];?><br><a href='<?php echo $lib['detailUrl']; ?>' title='Details anzeigen'>Details anzeigen</a></p>";
+
+				google.maps.event.addListener(marker, 'click', function()
+				{
+					if (!this.infowindow)
+					{
+						// um bestehende infowindows wiederzuverwenden
+						this.infowindow = new google.maps.InfoWindow(
+						{
+							content: this.contentString
+						} );
+		       		};
+		       		this.infowindow.open(karte, this);
+		       	});
+			<?php endforeach; ?>
+	   	}
+
+   		//default position uberschreiben wenn es ein mobile-geraet ist
+   		if($('body').hasClass('mobile'))
+   		{
+			var getPositions = function(position) {
+
+        		latitude = position.coords.latitude;
+        		longitude = position.coords.longitude;
+
+   				var plzcity = $('input#plzcity')[0];
+   				var searchForm = $('form#tl_bn_search_form')[0];
+
+        		if(plzcity.getAttribute('value') == '' && latitude != '' && longitude != '')
+        		{
+					$(plzcity).attr('value', latitude+', '+longitude);
+					searchForm.submit();
+        		}
+        		else
+        		{
+					showMap(latitude, longitude, zoom_level);
+        		}
+      		}
+      		navigator.geolocation.getCurrentPosition(getPositions);
+   		}
+   		else
+   		{
+   			showMap(latitude, longitude, zoom_level);
+   		}
+	
+		$(document).ready(function(){
+			$('#tablistmap a').on('shown.bs.tab', function (e) {
+	  			if($(this).attr('href') == '#searchmap') showMap(latitude, longitude, zoom_level);
+	  			// $(this).tab('show');
+			});
+		});
+
+	});
+	
+
+</script>
+</div>

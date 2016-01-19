@@ -1,0 +1,55 @@
+<div class="ce_form first last tableless block">
+<form<?php if ($this->action): ?> action="<?php echo $this->action; ?>"<?php endif; ?> id="tl_bn_search_form" method="post" class="bn-search-form">
+      <input type="hidden" name="FORM_SUBMIT" value="tl_bm_search_form">
+      <input type="hidden" value="{{REQUEST_TOKEN}}" name="REQUEST_TOKEN">
+
+     <?php if ($this->headline): ?>
+      <div class="headline">
+      <<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+      </div>
+    <?php endif; ?>
+      <section class="form-inline">
+	    <div class="widget grid1">
+			<label class="sr-only">Standort:</label>
+			<input type="text" placeholder="PLZ oder Ort" class="form-control" name="plzcity" id="plzcity" value="<?php echo $this->plzcity; ?>">
+		</div><!--formgroup-->
+		<div class="widget grid1">
+			<label class="sr-only">Umkreis:</label>
+				<select name="distance" class="form-control">
+				<?php
+				$distances = array(3,5,10,15,20,30,50,100);
+				foreach($distances as $distance):
+				?>
+					<option value="<?php echo $distance; ?>" <?php if($distance == $this->distance) echo 'selected';?>>+<?php echo $distance; ?> km</option>
+				<?php endforeach; ?>
+				</select>
+		</div><!--formgroup-->
+
+		<?php if(count($this->categories) > 0): ?>
+		<div class="widget grid1">
+			<label class="sr-only">Kategorien:</label>
+			<select name="category" class="form-control">
+				<option value="">-- alle Kategorien --</option>
+				<?php foreach($this->categories as $cid => $cname): ?>
+					<option value="<?php echo $cid;?>" <?php if($cid == $this->cid) echo 'selected';?>><?php echo $cname;?></option>
+				<?php endforeach;?>
+			</select>
+		</div><!--widget-->
+		<?php endif;?>
+
+		<div class="submit_container grid1">
+        	<button type="submit" class="btn-u submit">Suche</button>
+          	<?php if($this->session): ?>
+	        	<button type="submit" class="btn-u btn-u-red" name="filter_reset" value="1">zurücksetzen</button>
+			<?php endif; ?>
+		</div><!--submit-container-->
+		<div class="clear"></div>
+	</section><!--forminline-->
+
+	<?php if($this->total == 1):?>
+		<p>Eine Verkaufsstelle gefunden</p>
+	<?php elseif($this->total > 1): ?>
+		<p><?php echo $this->total;?> Verkaufsstellen gefunden.</p>
+	<?php endif; ?>
+</form>
+</div>

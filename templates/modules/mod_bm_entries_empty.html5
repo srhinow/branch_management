@@ -1,0 +1,10 @@
+
+<!-- indexer::stop -->
+<hr>
+  <?php if ($this->headline): ?>
+    <<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+  <?php endif; ?>
+
+  <p class="empty"><?php echo $this->empty; ?></p>
+
+<!-- indexer::continue -->

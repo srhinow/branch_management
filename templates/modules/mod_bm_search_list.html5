@@ -1,0 +1,39 @@
+<div class="<?php echo $this->class; ?> table-responsive ce_table"<?php echo $this->cssID; ?>>
+<table class="table table-hover sortable">
+	<thead>
+		<tr>
+			<th>PLZ</th>
+			<th>Ort</th>
+			<th>Name</th>
+			<?php if($this->isDistance):?><th>Entfernung</th><?php endif; ?>
+		</tr>
+	</thead>
+	<tbody>
+		<?php foreach ($this->stores as $store) echo $store['html']; ?>
+	</tbody>
+</table>
+</div>
+<?php echo $this->pagination; ?>
+<script>
+$(document).ready(function()
+{
+	if($('body').hasClass('mobile'))
+	{
+	    var getPositions = function(position) {
+
+	        latitude = position.coords.latitude;
+	        longitude = position.coords.longitude;
+
+	        var plzcity = $('input#plzcity')[0];
+	        var searchForm = $('form#tl_bn_search_form')[0];
+
+	        if(plzcity.getAttribute('value') == '' && latitude != '' && longitude != '')
+	        {
+	            $(plzcity).attr('value', latitude+', '+longitude);
+	            searchForm.submit();
+	        }
+	    }
+	    navigator.geolocation.getCurrentPosition(getPositions);
+	}
+});
+</script>

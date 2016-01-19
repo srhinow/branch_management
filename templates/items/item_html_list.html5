@@ -1,0 +1,7 @@
+<tr class="tr-row <?= $this->class; ?>">
+	<td><?= $this->plz; ?></td>
+	<td><?= $this->ort; ?></td>
+	<td><a href="<?= $this->detailUrl; ?>" class="liblink"><?= $this->filialname; ?></a></td>
+	<?php if((float)$this->distance > 0):?><td><?= number_format($this->distance,1,',','.'); ?> km</td><?php endif; ?>
+
+</tr>

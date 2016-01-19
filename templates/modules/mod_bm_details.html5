@@ -1,0 +1,89 @@
+<div class="<?php echo $this->class; ?> container"<?php echo $this->cssID; ?>>
+	<div class="grid1">
+		<?php if($data['addImages'] == 1 && count($this->data['images']) > 0): ?>
+		<div class="margin-bottom-30 block" style="position: relative;">
+			<div class="ce_sliderStart first block">
+				<div class="content-slider" data-config="3000,300,0,1">
+					<div class="slider-wrapper">
+						<?php foreach($this->data['images'] as $img): ?>
+							 <a href="<?php echo $img['src'];?>" data-lightbox="<?php echo 'bn_'.$data['id'];?>">
+								<img src="<?php echo $img['thumb']; ?>" alt="">
+							</a>
+						<?php endforeach; ?>
+					</div>
+				</div>
+
+				<nav class="slider-control">
+					<a href="#" class="slider-prev fa fa-chevron-left rounded-x" title="Zurück"></a>
+					<a href="#" class="slider-next fa fa-chevron-right rounded-x" title="Vorwärts"></a>    
+				</nav>
+			</div>
+		</div>
+		<?php endif; ?>
+
+		<div class="margin-bottom-30">
+			<a href="https://www.google.de/maps/place/<?php echo $this->data['gmapsplace']; ?>" target="_blank" title="Ort auf Google-Maps anzeigen">
+			<img src="http://maps.google.com/maps/api/staticmap?center=<?php echo $this->data['lat'];?>,<?php echo $this->data['lon'];?>&zoom=15&size=250x250&sensor=false&markers=color:blue|size:mid|<?php echo $this->data['lat'];?>,<?php echo $this->data['lon'];?>">
+			</a>
+		</div>
+
+	</div>
+
+	<div class="grid3">
+		<div class="headline"><h4><i class="fa fa-envelope-o"></i>Adressdaten</h4></div>
+		<p>
+			<?php echo $this->data['filialname']; ?><br>
+			<?php echo $this->data['strasse']; ?> <?php echo $this->data['hausnummer']; ?><br>
+			<?php echo $this->data['plz']; ?> <?php echo $this->data['ort']; ?>
+		</p>
+			<?php if($this->data['addOpenDates'] == 1): ?>
+					<div class="headline"><h4><i class="fa fa-clock-o"></i>Öffnungszeiten</h4></div>
+					<p><?php echo ($this->data['open_status'] == 'open' ) ? 'aktuell offen: ja' : 'Zurzeit ge&ouml;ffnet: nein'; echo '<br>'; ?></p>
+					<dl class="">
+						<?php if($this->data['mo_1_von']>0 || $this->data['mo_1_bis']>0 || $this->data['mo_2_von']>0 || $this->data['mo_2_bis']>0): ?>
+							<dt>Montag: </dt><dd><?php if($this->data['mo_1_von']>0) echo date('H:i',$this->data['mo_1_von']); ?><?php if($this->data['mo_1_bis']>0) echo '-'.date('H:i',$this->data['mo_1_bis']); ?><?php if($this->data['mo_2_von']>0) echo '&nbsp;u.&nbsp;'.date('H:i',$this->data['mo_2_von']); ?><?php if($this->data['mo_2_bis']>0) echo '-'.date('H:i',$this->data['mo_2_bis']); ?></dd>
+						<?php endif; ?>
+						<?php if($this->data['di_1_von']>0 || $this->data['di_1_bis']>0 || $this->data['di_2_von']>0 || $this->data['di_2_bis']>0): ?>
+							<dt>Dienstag: </dt><dd><?php if($this->data['di_1_von']>0) echo date('H:i',$this->data['di_1_von']); ?><?php if($this->data['di_1_bis']>0) echo '-'.date('H:i',$this->data['di_1_bis']); ?><?php if($this->data['di_2_von']>0) echo ' u. '.date('H:i',$this->data['di_2_von']); ?><?php if($this->data['di_2_bis']>0) echo '-'.date('H:i',$this->data['di_2_bis']); ?></dd>
+						<?php endif; ?>
+						<?php if($this->data['mi_1_von']>0 || $this->data['mi_1_bis']>0 || $this->data['mi_2_von']>0 || $this->data['mi_2_bis']>0): ?>
+							<dt>Mittwoch: </dt><dd><?php if($this->data['mi_1_von']>0) echo date('H:i',$this->data['mi_1_von']); ?><?php if($this->data['mi_1_bis']>0) echo '-'.date('H:i',$this->data['mi_1_bis']); ?><?php if($this->data['mi_2_von']>0) echo ' u. '.date('H:i',$this->data['mi_2_von']); ?><?php if($this->data['mi_2_bis']>0) echo '-'.date('H:i',$this->data['mi_2_bis']); ?></dd>
+						<?php endif; ?>
+						<?php if($this->data['do_1_von']>0 || $this->data['do_1_bis']>0 || $this->data['do_2_von']>0 || $this->data['do_2_bis']>0): ?>
+							<dt>Donnerstag: </dt><dd><?php if($this->data['do_1_von']>0) echo date('H:i',$this->data['do_1_von']); ?><?php if($this->data['do_1_bis']>0) echo '-'.date('H:i',$this->data['do_1_bis']); ?><?php if($this->data['do_2_von']>0) echo ' u. '.date('H:i',$this->data['do_2_von']); ?><?php if($this->data['do_2_bis']>0) echo '-'.date('H:i',$this->data['do_2_bis']); ?></dd>
+						<?php endif; ?>
+						<?php if($this->data['fr_1_von']>0 || $this->data['fr_1_bis']>0 || $this->data['fr_2_von']>0 || $this->data['fr_2_bis']>0): ?>
+							<dt>Freitag: </dt><dd><?php if($this->data['fr_1_von']>0) echo date('H:i',$this->data['fr_1_von']); ?><?php if($this->data['fr_1_bis']>0) echo '-'.date('H:i',$this->data['fr_1_bis']); ?><?php if($this->data['fr_2_von']>0) echo ' u. '.date('H:i',$this->data['fr_2_von']); ?><?php if($this->data['fr_2_bis']>0) echo '-'.date('H:i',$this->data['fr_2_bis']); ?></dd>
+						<?php endif; ?>
+						<?php if($this->data['sa_1_von']>0 || $this->data['sa_1_bis']>0 || $this->data['sa_2_von']>0 || $this->data['sa_2_bis']>0): ?>
+							<dt>Samstag: </dt><dd><?php if($this->data['sa_1_von']>0) echo date('H:i',$this->data['sa_1_von']); ?><?php if($this->data['sa_1_bis']>0) echo '-'.date('H:i',$this->data['sa_1_bis']); ?><?php if($this->data['sa_2_von']>0) echo ' u. '.date('H:i',$this->data['sa_2_von']); ?><?php if($this->data['sa_2_bis']>0) echo '-'.date('H:i',$this->data['sa_2_bis']); ?></dd>
+						<?php endif; ?>
+						<?php if($this->data['so_1_von']>0 || $this->data['so_1_bis']>0 || $this->data['so_2_von']>0 || $this->data['so_2_bis']>0): ?>
+							<dt>Sonntag: </dt><dd><?php if($this->data['so_1_von']>0) echo date('H:i',$this->data['so_1_von']); ?><?php if($this->data['so_1_bis']>0) echo '-'.date('H:i',$this->data['so_1_bis']); ?><?php if($this->data['so_2_von']>0) echo ' u. '.date('H:i',$this->data['so_2_von']); ?><?php if($this->data['so_2_bis']>0) echo '-'.date('H:i',$this->data['so_2_bis']); ?></dd>
+						<?php endif; ?>
+					</dl>
+					<?php if($this->data['sonst_oeffnungszeiten']): ?><p><?php echo $this->data['sonst_oeffnungszeiten']; ?></p><?php endif; ?>
+				<?php endif; ?>
+				<?php if($this->data['addContacts'] == 1):?>
+					<div class="headline"><h4><i class="fa fa-user"></i>Kontakt</h4></div>
+					<p>
+						<?php if(strlen($this->data['telefon']) >0 ) echo 'Telefon: <a href="tel:'.$this->data['phone_href'].'">'.$this->data['telefon'].'</a><br>'; ?>
+						<?php if(strlen($this->data['fax']) >0 ) echo 'Fax: '.$this->data['fax'].'<br>'; ?>
+						<?php if(strlen(trim($this->data['email']) ) >0 ) echo 'E-Mail: <a href="mailto:'.$this->data['email'].'">'.$this->data['email'].'</a><br>'; ?>
+						<?php if(strlen($this->data['website']) >0 ) echo 'Website: <a href="'.$this->data['website_href'].'" title="'.$this->data['website'].'" class="textlink"> <i class="fa fa-external-link"></i>'.$this->data['website_href'].'</a>'; ?>
+					</p>
+					<p class="social-icons">
+					<?php if(strlen($this->data['facebook']) >0 ) echo '<a href="'.$this->data['facebook_href'].'" title="facebook"><i class="fa fa-facebook-official"></i></a>'; ?>
+					<?php if(strlen($this->data['twitter']) >0 ) echo '<a href="'.$this->data['twitter_href'].'" title="twitter"><i class="fa fa-twitter"></i></a>'; ?>
+					<?php if(strlen($this->data['gplus']) >0 ) echo '<a href="'.$this->data['gplus_href'].'" title="Google +"><i class="fa fa-google-plus-square"></i></a>'; ?>
+					<?php if(strlen($this->data['blog']) >0 ) echo '<a href="'.$this->data['blog_href'].'" title="Blog"><i class="fa fa-wordpress"></i></a>'; ?>
+					</p>
+				<?php endif; ?>
+	</div>
+	<div class="clear"></div>
+	<br>
+	<p class="back">
+			<a title="Zurück" href="<?=$this->referer; ?>">Zurück</a>
+	</p>
+</div>
+
