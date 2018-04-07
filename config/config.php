@@ -14,7 +14,7 @@
  * -------------------------------------------------------------------------
  */
 	@define('BM_VERSION', '1.0');
-	@define('BM_BUILD', '1');
+	@define('BM_BUILD', '2');
 	@define('BM_PATH', '/system/modules/branch_management');
 
 	$GLOBALS['BM']['BM_IMAGE_PATH'] = '/files/Stores';
