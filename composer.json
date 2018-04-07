@@ -1,0 +1,36 @@
+{
+  "name": "srhinow/branch_management",
+  "description": "simple branch management for Contao CMS",
+  "keywords": ["contao", "filial","branch","company","manager"],
+  "type": "contao-module",
+  "homepage": "https://github.com/srhinow/branch_management",
+  "license": "GPL-3.0+",
+  "authors":[
+    {
+      "name":"Sven Rhinow",
+      "homepage":"https://www.sr-tag.de",
+      "role":"Developer"
+    }
+  ],
+  "support":{
+    "email": "kservice@sr-tag.de",
+    "issues":"https://github.com/srhinow/branch_management/issues",
+    "source":"https://github.com/srhinow/branch_management"
+  },
+  "require": {
+    "php": ">=5.6",
+    "contao/core-bundle": "^3.2, < 4.0-dev",
+    "contao-community-alliance/composer-plugin":"~2.4 || ~3.0",
+    "menatwork/contao-multicolumnwizard": ">=3.3.16.0,<3.4-dev"
+  },
+  "replace": {
+    "contao-legacy/branch_management": "self.version"
+  },
+  "extra": {
+    "contao": {
+      "sources": {
+        "": "system/modules/branch_management"
+      }
+    }
+  }
+}
