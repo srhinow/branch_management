@@ -1,17 +1,26 @@
 <?php
+namespace Srhinow\BranchManagement\Dca;
 
 /**
  * PHP version 5
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
  * @author     Sven Rhinow
- * @package    bn_libraries
- * @license    commercial
+ * @package    branch_management
+ * @license    LGPL
  * @filesource
  */
 
 /**
  * Table tl_bm_stores
  */
+use Contao\Backend;
+use Contao\Database;
+use Contao\DataContainer;
+use Contao\Files;
+use Contao\Input;
+use Contao\BackendUser as User;
+use UnitedPrototype\GoogleAnalytics\Exception;
+
 $GLOBALS['TL_DCA']['tl_bm_stores'] = array
 (
 
@@ -22,8 +31,8 @@ $GLOBALS['TL_DCA']['tl_bm_stores'] = array
 		'enableVersioning'            => true,
 		'onsubmit_callback' => array
 		(
-			array('tl_bm_stores', 'setFirstGeoLatLon'),
-			// array('tl_bm_stores', 'setAllGeoLatLon')
+			array('BmStores', 'setFirstGeoLatLon'),
+			// array('BmStores', 'setAllGeoLatLon')
 		),
 		'sql' => array
 		(
@@ -118,7 +127,7 @@ $GLOBALS['TL_DCA']['tl_bm_stores'] = array
 		'addImages' => 	'imageUpload',
 		'addOpenDates' => 'mo_1_von,mo_1_bis,mo_2_von,mo_2_bis,di_1_von,di_1_bis,di_2_von,di_2_bis,mi_1_von,mi_1_bis,mi_2_von,mi_2_bis,do_1_von,do_1_bis,do_2_von,do_2_bis,fr_1_von,fr_1_bis,fr_2_von,fr_2_bis,sa_1_von,sa_1_bis,sa_2_von,sa_2_bis,so_1_von,so_1_bis,so_2_von,so_2_bis,sonst_oeffnungszeiten'
 	),
-	
+
 	// Fields
 	'fields' => array
 	(
@@ -153,7 +162,7 @@ $GLOBALS['TL_DCA']['tl_bm_stores'] = array
 			'sql'					=> "varchar(64) NOT NULL default ''",
 			'save_callback' => array
 			(
-				array('tl_bm_stores', 'generateAlias')
+				array('BmStores', 'generateAlias')
 			)
 
 		),
@@ -232,7 +241,7 @@ $GLOBALS['TL_DCA']['tl_bm_stores'] = array
 			'eval'                    => array('tl_class'=>'clr'),
 			'save_callback' => array
 			(
-				array('tl_bm_stores', 'setNewGeoLatLon')
+				array('BmStores', 'setNewGeoLatLon')
 			),
 		),
 		'addContacts' => array
@@ -319,7 +328,7 @@ $GLOBALS['TL_DCA']['tl_bm_stores'] = array
 		'imageUpload' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['tl_bm_stores']['imageUpload'],
-			'input_field_callback'    => array('tl_bm_stores', 'imageUpload')
+			'input_field_callback'    => array('BmStores', 'imageUpload')
 		),
 		'addImages' => array
 		(
@@ -607,14 +616,9 @@ $GLOBALS['TL_DCA']['tl_bm_stores'] = array
 
 
 /**
- * Class tl_bm_stores
- *
- * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Leo Feyer 2005-2012
- * @author     Leo Feyer <http://www.contao.org>
- * @package    Controller
+ * Class BmStores
  */
-class tl_bm_stores extends Backend
+class BmStores extends Backend
 {
 
 	/**
@@ -623,7 +627,6 @@ class tl_bm_stores extends Backend
 	public function __construct()
 	{
 		parent::__construct();
-		$this->import('BackendUser', 'User');
 	}
 
 	/**
@@ -643,7 +646,7 @@ class tl_bm_stores extends Backend
 			$varValue = standardize($dc->activeRecord->filialname);
 		}
 
-		$objAlias = $this->Database->prepare("SELECT id FROM tl_bm_stores WHERE id=? OR alias=?")
+		$objAlias = Database::getInstance()->prepare("SELECT id FROM tl_bm_stores WHERE id=? OR alias=?")
 								   ->execute($dc->id, $varValue);
 
 		// Check whether the page alias exists
@@ -664,30 +667,30 @@ class tl_bm_stores extends Backend
 	 */
 	public function checkPermission()
 	{
-		if ($this->User->isAdmin)
+		if (User::getInstance()->isAdmin)
 		{
 			return;
 		}
 
 		// Set root IDs
-		if (!is_array($this->User->calendars) || empty($this->User->calendars))
+		if (!is_array(User::getInstance()->calendars) || empty(User::getInstance()->calendars))
 		{
 			$root = array(0);
 		}
 		else
 		{
-			$root = $this->User->calendars;
+			$root = User::getInstance()->calendars;
 		}
 
-		$id = strlen($this->Input->get('id')) ? $this->Input->get('id') : CURRENT_ID;
+		$id = strlen(Input::get('id')) ? Input::get('id') : CURRENT_ID;
 
 		// Check current action
-		switch ($this->Input->get('act'))
+		switch (Input::get('act'))
 		{
 			case 'create':
-				if (!strlen($this->Input->get('pid')) || !in_array($this->Input->get('pid'), $root))
+				if (!strlen(Input::get('pid')) || !in_array(Input::get('pid'), $root))
 				{
-					$this->log('Not enough permissions to create Event Reservation in channel ID "'.$this->Input->get('pid').'"', 'tl_bm_stores checkPermission', TL_ERROR);
+					log('Not enough permissions to create Event Reservation in channel ID "'.Input::get('pid').'"', 'tl_bm_stores checkPermission', TL_ERROR);
 					$this->redirect('contao/main.php?act=error');
 				}
 				break;
@@ -697,19 +700,19 @@ class tl_bm_stores extends Backend
 			case 'copy':
 			case 'delete':
 			case 'toggle':
-				$objRecipient = $this->Database->prepare("SELECT pid FROM tl_bm_stores WHERE id=?")
+				$objRecipient = Database::getInstance()->prepare("SELECT pid FROM tl_bm_stores WHERE id=?")
 											   ->limit(1)
 											   ->execute($id);
 
 				if ($objRecipient->numRows < 1)
 				{
-					$this->log('Invalid Event Reservation ID "'.$id.'"', 'tl_bm_stores checkPermission', TL_ERROR);
+					log('Invalid Event Reservation ID "'.$id.'"', 'tl_bm_stores checkPermission', TL_ERROR);
 					$this->redirect('contao/main.php?act=error');
 				}
 
 				if (!in_array($objRecipient->pid, $root))
 				{
-					$this->log('Not enough permissions to '.$this->Input->get('act').' recipient ID "'.$id.'" of calendar event ID "'.$objRecipient->pid.'"', 'tl_bm_stores checkPermission', TL_ERROR);
+					log('Not enough permissions to '.Input::get('act').' recipient ID "'.$id.'" of calendar event ID "'.$objRecipient->pid.'"', 'tl_bm_stores checkPermission', TL_ERROR);
 					$this->redirect('contao/main.php?act=error');
 				}
 				break;
@@ -720,16 +723,16 @@ class tl_bm_stores extends Backend
 			case 'overrideAll':
 				if (!in_array($id, $root))
 				{
-					$this->log('Not enough permissions to access calendar event ID "'.$id.'"', 'tl_bm_stores checkPermission', TL_ERROR);
+					log('Not enough permissions to access calendar event ID "'.$id.'"', 'tl_bm_stores checkPermission', TL_ERROR);
 					$this->redirect('contao/main.php?act=error');
 				}
 
-				$objRecipient = $this->Database->prepare("SELECT id FROM tl_bm_stores WHERE pid=?")
+				$objRecipient = Database::getInstance()->prepare("SELECT id FROM tl_bm_stores WHERE pid=?")
 											 ->execute($id);
 
 				if ($objRecipient->numRows < 1)
 				{
-					$this->log('Invalid Event Reservation ID "'.$id.'"', 'tl_bm_stores checkPermission', TL_ERROR);
+					log('Invalid Event Reservation ID "'.$id.'"', 'tl_bm_stores checkPermission', TL_ERROR);
 					$this->redirect('contao/main.php?act=error');
 				}
 
@@ -739,14 +742,14 @@ class tl_bm_stores extends Backend
 				break;
 
 			default:
-				if (strlen($this->Input->get('act')))
+				if (strlen(Input::get('act')))
 				{
-					$this->log('Invalid command "'.$this->Input->get('act').'"', 'tl_bm_stores checkPermission', TL_ERROR);
+					log('Invalid command "'.Input::get('act').'"', 'tl_bm_stores checkPermission', TL_ERROR);
 					$this->redirect('contao/main.php?act=error');
 				}
 				elseif (!in_array($id, $root))
 				{
-					$this->log('Not enough permissions to access Event Reservation ID "'.$id.'"', 'tl_bm_stores checkPermission', TL_ERROR);
+					log('Not enough permissions to access Event Reservation ID "'.$id.'"', 'tl_bm_stores checkPermission', TL_ERROR);
 					$this->redirect('contao/main.php?act=error');
 				}
 				break;
@@ -780,7 +783,7 @@ class tl_bm_stores extends Backend
 			for($c=1; $c <= $filecount; $c++)
 			{
 				$bnImages[$c] = $this->uploadImage($_FILES['image_'.$c], $c, $bnImages);
-				
+
 
 			}
 
@@ -790,7 +793,7 @@ class tl_bm_stores extends Backend
 			$set = array();
 			foreach($bnImages as $k => $path) $set['image_'.$k] = $path;
 
-			$this->Database->prepare('UPDATE `tl_bm_stores` %s WHERE `id`=?')
+			Database::getInstance()->prepare('UPDATE `tl_bm_stores` %s WHERE `id`=?')
 			->set($set)
 			->limit(1)
 			->execute(\Input::get('id'));
@@ -837,10 +840,9 @@ class tl_bm_stores extends Backend
 			{
 				if(!file_exists(TL_ROOT . '/' . $delFile) || !in_array($delFile,$bnImages)) continue;
 
-				$this->import('Files');
-				$this->Files->delete($delFile);
+				Files::getInstance()->delete($delFile);
 
-				foreach($bnImages as $k => $v) 
+				foreach($bnImages as $k => $v)
 					if($v == $delFile) $bnImages[$k] = '';
 			}
 		}
@@ -852,10 +854,9 @@ class tl_bm_stores extends Backend
 	{
 		global $erroMsg;
 		$returnPath = '';
-		$this->import('Files');
 
 		//hole zur aktuellen Buecherei den User
-		// $memberObj = $this->Database->prepare('SELECT * FROM `tl_member` WHERE `library_id`=?')
+		// $memberObj = Database::getInstance()->prepare('SELECT * FROM `tl_member` WHERE `library_id`=?')
 		// 							->limit(1)
 		// 							->execute(\Input::get('id'));
 
@@ -885,9 +886,9 @@ class tl_bm_stores extends Backend
 					$newFileName = 'image_'.$nr.'.'.$fileInfos['extension'];
 					$destFilePath = $GLOBALS['BN']['BN_IMAGE_PATH'].'/user_'.\Input::get('id');
 
-					if($this->Files->move_uploaded_file($file['tmp_name'], $destFilePath.'/'.$newFileName) )
+					if(Files::getInstance()->move_uploaded_file($file['tmp_name'], $destFilePath.'/'.$newFileName) )
 					{
-						$this->Files->chmod($destFilePath.'/'.$newFileName, $GLOBALS['TL_CONFIG']['defaultFileChmod']);
+						Files::getInstance()->chmod($destFilePath.'/'.$newFileName, $GLOBALS['TL_CONFIG']['defaultFileChmod']);
 						$returnPath = $destFilePath.'/'.$newFileName;
 					}
 
@@ -904,16 +905,16 @@ class tl_bm_stores extends Backend
 
 	private function sortAndRename($bnImages)
 	{
-		$this->import('Files');
 		$newArr = array();
 		$c = 1;
+
 		foreach($bnImages as $k => $img)
 		{
 			if($img == '') continue;
 			$oldInfos = pathinfo($img);
 
 			$newPath = $oldInfos['dirname'].'/image_'.$c.'.'.$oldInfos['extension'];
-			$this->Files->rename($img,$newPath);
+			Files::getInstance()->rename($img,$newPath);
 			$newArr[$c] = $newPath;
 			$c++;
 		}
@@ -922,7 +923,7 @@ class tl_bm_stores extends Backend
 		return $newArr;
 	}
 
-	public function setFirstGeoLatLon(DataContainer $dc) 
+	public function setFirstGeoLatLon(DataContainer $dc)
 	{
 
 		if((int) $dc->activeRecord->lat == 0 || (int) $dc->activeRecord->lon == 0)
@@ -931,7 +932,7 @@ class tl_bm_stores extends Backend
 		}
 	}
 
-	public function setNewGeoLatLon($varValue, DataContainer $dc) 
+	public function setNewGeoLatLon($varValue, DataContainer $dc)
 	{
 
 		if((int) $varValue == 1)
@@ -951,7 +952,7 @@ class tl_bm_stores extends Backend
 
 		require_once(TL_ROOT.'/'.BM_PATH.'/libs/google_maps_api.php');
 
-		    $geo = new googleGeoData();
+		    $geo = new \googleGeoData();
 			$json = $geo->getGeoData($addressStr);
 
 			$data = json_decode($json);
@@ -967,7 +968,7 @@ class tl_bm_stores extends Backend
 						'setnewgeo' => ''
 					);
 
-					$this->Database->prepare('UPDATE `tl_bm_stores` %s WHERE id=?')->set($set)->execute($dc->id);
+					Database::getInstance()->prepare('UPDATE `tl_bm_stores` %s WHERE id=?')->set($set)->execute($dc->id);
 				}
 		    }
 	}
@@ -978,17 +979,17 @@ class tl_bm_stores extends Backend
 	*/
 	public function setAllGeoLatLon(DataContainer $dc)
 	{
-		$resObj = $this->Database->prepare('SELECT * FROM `tl_bm_stores` WHERE lat=0 OR lon=0')->execute();
+		$resObj = Database::getInstance()->prepare('SELECT * FROM `tl_bm_stores` WHERE lat=0 OR lon=0')->execute();
 
 		if($resObj->numRows > 1)
 		{
-			require_once(TL_ROOT.'/'.BN_PATH.'/libs/google_maps_api.php');
+			require_once(TL_ROOT.'/'.BM_PATH.'/libs/google_maps_api.php');
 
 			while($resObj->next())
 			{
 			    $addressStr = urlencode($resObj->strasse.' '.$resObj->hausnummer.', '.$resObj->plz.' '.$resObj->ort.', Deutschland');
 
-			    $geo = new googleGeoData();
+			    $geo = new \googleGeoData();
     			$json = $geo->getGeoData($addressStr);
 
     			$data = json_decode($json);
@@ -1003,7 +1004,7 @@ class tl_bm_stores extends Backend
 							'lon' => $data->results[0]->geometry->location->lng
 						);
 
-						$this->Database->prepare('UPDATE `tl_bm_stores` %s WHERE id=?')->set($set)->execute($resObj->id);
+						Database::getInstance()->prepare('UPDATE `tl_bm_stores` %s WHERE id=?')->set($set)->execute($resObj->id);
 					}
 			    }
 			}
@@ -1021,14 +1022,14 @@ class tl_bm_stores extends Backend
 	 */
 	public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
 	{
-		if (strlen($this->Input->get('tid')))
+		if (strlen(Input::get('tid')))
 		{
-			$this->toggleVisibility($this->Input->get('tid'), ($this->Input->get('state') == 1));
+			$this->toggleVisibility(Input::get('tid'), (Input::get('state') == 1));
 			$this->redirect($this->getReferer());
 		}
 
 		// Check permissions AFTER checking the tid, so hacking attempts are logged
-		if (!$this->User->isAdmin && !$this->User->hasAccess('tl_bm_stores::accepted', 'alexf'))
+		if (!User::getInstance()->isAdmin && !User::getInstance()->hasAccess('tl_bm_stores::accepted', 'alexf'))
 		{
 			return '';
 		}
@@ -1052,14 +1053,14 @@ class tl_bm_stores extends Backend
 	public function toggleVisibility($intId, $blnVisible)
 	{
 		// Check permissions to edit
-		$this->Input->setGet('id', $intId);
-		$this->Input->setGet('act', 'toggle');
+		Input::setGet('id', $intId);
+		Input::setGet('act', 'toggle');
 		$this->checkPermission();
 
 		// Check permissions to publish
-		if (!$this->User->isAdmin && !$this->User->hasAccess('tl_bm_stores::accepted', 'alexf'))
+		if (!User::getInstance()->isAdmin && !User::getInstance()->hasAccess('tl_bm_stores::accepted', 'alexf'))
 		{
-			$this->log('Not enough permissions to publish/unpublish event reservation ID "'.$intId.'"', 'tl_bm_stores toggleVisibility', TL_ERROR);
+			log('Not enough permissions to publish/unpublish event reservation ID "'.$intId.'"', 'tl_bm_stores toggleVisibility', TL_ERROR);
 			$this->redirect('contao/main.php?act=error');
 		}
 
@@ -1076,7 +1077,7 @@ class tl_bm_stores extends Backend
 		}
 
 		// Update the database
-		$this->Database->prepare("UPDATE tl_bm_stores SET modify=". time() .", accepted='" . ($blnVisible ? 1 : '') . "' WHERE id=?")
+		Database::getInstance()->prepare("UPDATE tl_bm_stores SET modify=". time() .", accepted='" . ($blnVisible ? 1 : '') . "' WHERE id=?")
 					   ->execute($intId);
 
 		$this->createNewVersion('tl_bm_stores', $intId);
@@ -1113,9 +1114,7 @@ class tl_bm_stores extends Backend
 	 */
 	public function fillEmailFields($varValue, DataContainer $dc)
 	{
-
-
-		$result = $this->Database->prepare('SELECT * FROM `tl_bbk_properties`')
+		$result = Database::getInstance()->prepare('SELECT * FROM `tl_bbk_properties`')
 						->limit(1)
 						->execute();
 		switch($varValue)
@@ -1144,10 +1143,11 @@ class tl_bm_stores extends Backend
 		    'accepted' => $varValue
 		);
 
-		$this->Database->prepare('UPDATE `tl_bm_stores` %s WHERE `id`=?')
+		Database::getInstance()->prepare('UPDATE `tl_bm_stores` %s WHERE `id`=?')
 			       ->set($postenset)
 			       ->execute($dc->id);
-                $this->reload();
+
+		$this->reload();
 		return $varValue;
 	}
 

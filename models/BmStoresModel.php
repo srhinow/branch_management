@@ -1,20 +1,17 @@
 <?php
+namespace Srhinow\BranchManagement\Models;
 
 /**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2014 Leo Feyer
- *
- * @package bn_libraries
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * PHP version 5
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
+ * @author     Sven Rhinow
+ * @package    branch_management
+ * @license    LGPL
+ * @filesource
  */
 
 
-/**
- * Run in a custom namespace, so the class can be replaced
- */
-namespace Stores;
+use Contao\Model;
 
 
 /**
@@ -24,7 +21,7 @@ namespace Stores;
  * @author    Leo Feyer <https://github.com/leofeyer>
  * @copyright Leo Feyer 2005-2014
  */
-class BmStoresModel extends \Model
+class BmStoresModel extends Model
 {
 	/**
 	 * Table name

@@ -1,10 +1,11 @@
 <?php
+namespace Srhinow\BranchManagement\Dca;
 
 /**
  * PHP version 5
- * @copyright  sr-tag.de 2015
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
  * @author     Sven Rhinow
- * @package    simple_recipes
+ * @package    branch_management
  * @license    LGPL
  * @filesource
  */
@@ -12,6 +13,10 @@
 /**
  * Table tl_bm_stores_categories
  */
+use Contao\Backend;
+use Contao\Database;
+use Contao\DataContainer;
+
 $GLOBALS['TL_DCA']['tl_bm_stores_categories'] = array
 (
 
@@ -130,7 +135,7 @@ $GLOBALS['TL_DCA']['tl_bm_stores_categories'] = array
 			'sql'					=> "varchar(64) NOT NULL default ''",
 			'save_callback' => array
 			(
-				array('tl_bm_stores_categories', 'generateAlias')
+				array('BmStoresCategories', 'generateAlias')
 			)
 
 		),
@@ -147,9 +152,9 @@ $GLOBALS['TL_DCA']['tl_bm_stores_categories'] = array
 
 
 /**
- * Class tl_bm_stores_categories
+ * Class BmStoresCategories
  */
-class tl_bm_stores_categories extends Backend
+class BmStoresCategories extends Backend
 {
 	
 	/**
@@ -169,7 +174,7 @@ class tl_bm_stores_categories extends Backend
 			$varValue = standardize($dc->activeRecord->title);
 		}
 
-		$objAlias = $this->Database->prepare("SELECT id FROM tl_bm_stores_categories WHERE id=? OR alias=?")
+		$objAlias = Database::getInstance()->prepare("SELECT id FROM tl_bm_stores_categories WHERE id=? OR alias=?")
 								   ->execute($dc->id, $varValue);
 
 		// Check whether the page alias exists

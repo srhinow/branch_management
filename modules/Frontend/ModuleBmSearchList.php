@@ -1,29 +1,24 @@
 <?php
+namespace Srhinow\BranchManagement\Modules\Frontend;
 
 /**
  * PHP version 5
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
  * @author     Sven Rhinow
- * @package    bn_libraries (www.bibliotheken-niedersachsen.de/)
- * @license    commercial
+ * @package    branch_management
+ * @license    LGPL
  * @filesource
  */
 
-/**
- * Run in a custom namespace, so the class can be replaced
- */
-namespace Stores;
+use Contao\BackendTemplate;
+use Contao\FrontendTemplate;
+use Srhinow\BranchManagement\Models\BmStoresModel;
 
 
 /**
  * Class ModuleBnSearchList
- *
- * Front end module "bn search list".
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
- * @author     Sven Rhinow
- * @package    bm_libraries
  */
-class ModuleBmSearchList extends \ModuleBm
+class ModuleBmSearchList extends ModuleBm
 {
 
 	/**
@@ -41,7 +36,7 @@ class ModuleBmSearchList extends \ModuleBm
 	{
 		if (TL_MODE == 'BE')
 		{
-			$objTemplate = new \BackendTemplate('be_wildcard');
+			$objTemplate = new BackendTemplate('be_wildcard');
 
 			$objTemplate->wildcard = '### Filial-SUCH-LISTE ###';
 			$objTemplate->title = $this->headline;
@@ -94,12 +89,12 @@ class ModuleBmSearchList extends \ModuleBm
 		}
 
 		// Get the total number of items
-		$intTotal = \BmStoresModel::countStoreEntries($geodata,$session['distance']);
+		$intTotal = BmStoresModel::countStoreEntries($geodata,$session['distance']);
 
 		// Filter anwenden um die Gesamtanzahl zuermitteln
 		if($intTotal > 0)
 		{
-			$filterStoresObj = \BmStoresModel::findStores($intTotal, 0, $geodata, $session['distance']);
+			$filterStoresObj = BmStoresModel::findStores($intTotal, 0, $geodata, $session['distance']);
 
 			$counter = 0;
 			$idArr = array();
@@ -121,7 +116,7 @@ class ModuleBmSearchList extends \ModuleBm
 
 		if ((int) $intTotal < 1)
 		{
-			$this->Template = new \FrontendTemplate('mod_bm_entries_empty');
+			$this->Template = new FrontendTemplate('mod_bm_entries_empty');
 			$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyBmList'];
 			return;
 		}
@@ -150,8 +145,8 @@ class ModuleBmSearchList extends \ModuleBm
 
 				$objPage->noSearch = 1;
 				$objPage->cache = 0;
-
 				$objTarget = \PageModel::findByPk($objPage->id);
+
 				if ($objTarget !== null)
 				{
 					$reloadUrl = ampersand($this->generateFrontendUrl( $objTarget->row() ) );
@@ -180,19 +175,17 @@ class ModuleBmSearchList extends \ModuleBm
 		// Get the items
 		if (isset($limit))
 		{
-
-			$storesObj = \BmStoresModel::findStores($limit, $offset, $geodata, $session['distance'], $idArr);
+			$storesObj = BmStoresModel::findStores($limit, $offset, $geodata, $session['distance'], $idArr);
 		}
 		else
 		{
-
-			$storesObj = \BmStoresModel::findStores(0, $offset, $geodata, $session['distance'], $idArr);
+			$storesObj = BmStoresModel::findStores(0, $offset, $geodata, $session['distance'], $idArr);
 		}
 
 		// No items found
 		if ($storesObj === null)
 		{
-			$this->Template = new \FrontendTemplate('mod_bm_entries_empty');
+			$this->Template = new FrontendTemplate('mod_bm_entries_empty');
 			$this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyBmList'];
 		}
 		else
@@ -204,7 +197,5 @@ class ModuleBmSearchList extends \ModuleBm
 		$this->Template->isDistance = (count($session) > 0 && strlen($session['plzcity']) >0 ) ? true : false;
 		$this->Template->filterActive = \Input::get('s') ? true : false;
 		$this->Template->totalItems = $intTotal;
-
-
 	}
 }

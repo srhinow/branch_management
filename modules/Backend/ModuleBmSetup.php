@@ -1,16 +1,21 @@
 <?php
+namespace Srhinow\BranchManagement\Modules\Backend;
 
 /**
- * @copyright  Sven Rhinow 2014
- * @author     sr-tag Sven Rhinow Webentwicklung <http://www.sr-tag.de>
- * @package    bn_libraries
+ * PHP version 5
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
+ * @author     Sven Rhinow
+ * @package    branch_management
  * @license    LGPL
  * @filesource
  */
 
+use Contao\BackendModule;
+use Contao\BackendUser as User;
+use Contao\Environment;
+
 /**
- * Class ModuleBNSetup
- * Back end module Isotope "setup".
+ * Class ModuleBMSetup
  */
 class ModuleBMSetup extends BackendModule
 {
@@ -34,21 +39,20 @@ class ModuleBMSetup extends BackendModule
 	 */
 	public function generate()
 	{
-		$this->import('BackendUser', 'User');
 
-		foreach ($GLOBALS['BN_SETUP_MOD'] as $strGroup => $arrModules)
+		foreach ($GLOBALS['BM_SETUP_MOD'] as $strGroup => $arrModules)
 		{
 
 			foreach ($arrModules as $strModule => $arrConfig)
 			{
 
-				if ($this->User->hasAccess($strModule, 'bn_modules'))
+				if (User::getInstance()->hasAccess($strModule, 'bm_modules'))
 				{
 
 					if (is_array($arrConfig['tables']))
 					{
-						$GLOBALS['BE_MOD']['bn']['tl_bn_setup']['tables'] = array_merge($GLOBALS['BE_MOD']['bn']['tl_bn_setup']['tables'],$arrConfig['tables']);
-						// print_r($GLOBALS['BE_MOD']['bn']['tl_bn_setup']['tables']);
+						$GLOBALS['BE_MOD']['bn']['tl_bm_setup']['tables'] = array_merge($GLOBALS['BE_MOD']['bn']['tl_bm_setup']['tables'],$arrConfig['tables']);
+						// print_r($GLOBALS['BE_MOD']['bn']['tl_bm_setup']['tables']);
 					}
 
 					$this->arrModules[$GLOBALS['TL_LANG']['IMD'][$strGroup]][$strModule] = array
@@ -71,7 +75,7 @@ class ModuleBMSetup extends BackendModule
 		// Table set but module missing, fix the saveNcreate link
 		elseif ($this->Input->get('table') != '')
 		{
-			foreach ($GLOBALS['BN_SETUP_MOD'] as $arrGroup)
+			foreach ($GLOBALS['BM_SETUP_MOD'] as $arrGroup)
 			{
 				foreach( $arrGroup as $strModule => $arrConfig )
 				{
@@ -97,7 +101,7 @@ class ModuleBMSetup extends BackendModule
 
 		$this->Template->modules = $this->arrModules;
 		$this->Template->script = $this->Environment->script;
-		$this->Template->welcome = sprintf($GLOBALS['TL_LANG']['BN']['config_module'], BN_VERSION . '.' . BN_BUILD);
+		$this->Template->welcome = sprintf($GLOBALS['TL_LANG']['BN']['config_module'], BM_VERSION . '.' . BM_BUILD);
 	}
 
 
@@ -109,9 +113,9 @@ class ModuleBMSetup extends BackendModule
 	protected function getBNModule($module)
 	{
 		$arrModule = array();
-// print_r($GLOBALS['BN_SETUP_MOD']);
+// print_r($GLOBALS['BM_SETUP_MOD']);
 		// print $module;
-		foreach ($GLOBALS['BN_SETUP_MOD'] as $arrGroup)
+		foreach ($GLOBALS['BM_SETUP_MOD'] as $arrGroup)
 		{
 			if (!empty($arrGroup) && in_array($module, array_keys($arrGroup)))
 			{
@@ -120,9 +124,9 @@ class ModuleBMSetup extends BackendModule
 		}
 
 		// Check whether the current user has access to the current module
-		if (!$this->User->isAdmin && !$this->User->hasAccess($module, 'bn_modules'))
+		if (!$this->User->isAdmin && !$this->User->hasAccess($module, 'bm_modules'))
 		{
-			$this->log('invoice_and_offer module "' . $module . '" was not allowed for user "' . $this->User->username . '"', 'ModuleIsotopeSetup getIsotopeModule()', TL_ERROR);
+			log('invoice_and_offer module "' . $module . '" was not allowed for user "' . $this->User->username . '"', 'ModuleIsotopeSetup getIsotopeModule()', TL_ERROR);
 			$this->redirect($this->Environment->script.'?act=error');
 		}
 
@@ -154,7 +158,7 @@ class ModuleBMSetup extends BackendModule
 		{
 			if (!in_array($strTable, (array) $arrModule['tables']))
 			{
-				$this->log('Table "' . $strTable . '" is not allowed in BN module "' . $module . '"', 'ModuleIsotopeSetup getIsotopeModule()', TL_ERROR);
+				log('Table "' . $strTable . '" is not allowed in BN module "' . $module . '"', 'ModuleIsotopeSetup getIsotopeModule()', TL_ERROR);
 				$this->redirect('contao/main.php?act=error');
 			}
 
@@ -189,7 +193,7 @@ class ModuleBMSetup extends BackendModule
 		}
 
 		// AJAX request
-		if ($_POST && $this->Environment->isAjaxRequest)
+		if ($_POST && Environment::get('isAjaxRequest'))
 		{
 			$this->objAjax->executePostActions($dc);
 		}
@@ -240,7 +244,7 @@ class ModuleBMSetup extends BackendModule
 				case 'edit':
 					if (!$dc instanceof editable)
 					{
-						$this->log('Data container ' . $strTable . ' is not editable', 'Backend getBackendModule()', TL_ERROR);
+						log('Data container ' . $strTable . ' is not editable', 'Backend getBackendModule()', TL_ERROR);
 						trigger_error('The current data container is not editable', E_USER_ERROR);
 					}
 					break;

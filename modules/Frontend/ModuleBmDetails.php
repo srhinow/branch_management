@@ -1,19 +1,19 @@
 <?php
+namespace Srhinow\BranchManagement\Modules\Frontend;
 
 /**
  * PHP version 5
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
  * @author     Sven Rhinow
- * @package    bn_libraries (www.bibliotheken-niedersachsen.de/)
- * @license    commercial
+ * @package    branch_management
+ * @license    LGPL
  * @filesource
  */
 
-/**
- * Run in a custom namespace, so the class can be replaced
- */
-namespace Stores;
-
+use Contao\Database;
+use Contao\Session;
+use Contao\StringUtil;
+use Srhinow\BranchManagement\Models\BmStoresModel;
 
 /**
  * Class ModuleBnSearchList
@@ -23,7 +23,7 @@ namespace Stores;
  * @author     Sven Rhinow
  * @package    bn_libraries
  */
-class ModuleBmDetails extends \ModuleBm
+class ModuleBmDetails extends ModuleBm
 {
 
 	/**
@@ -79,11 +79,11 @@ class ModuleBmDetails extends \ModuleBm
 
 		global $objPage;
 
-		$session = $this->Session->get('bmfilter')?: array();
+		$session = Session::getInstance()->get('bmfilter')?: array();
 
 
 		// Get the total number of items
-		$objStore = \BmStoresModel::findByIdOrAlias(\Input::get('store'));
+		$objStore = BmStoresModel::findStoreByIdOrAlias(\Input::get('store'));
 
 		if ($objStore === null)
 		{
@@ -102,7 +102,7 @@ class ModuleBmDetails extends \ModuleBm
 		// Kategorie
 		if((int) $storeData['category'] > 0 )
 		{
-			$catObj = $this->Database->prepare('SELECT * FROM `tl_bm_stores_categories` WHERE `id`=? ')
+			$catObj = Database::getInstance()->prepare('SELECT * FROM `tl_bm_stores_categories` WHERE `id`=? ')
 			->limit(1)
 			->execute($storeData['category']);
 
@@ -126,8 +126,7 @@ class ModuleBmDetails extends \ModuleBm
 		$storeData['blog_href'] = (substr($storeData['blog'],0,4) != 'http') ? 'http://'.$storeData['blog'] : $storeData['blog'];
 
 		// Email
-		$this->import('String');
-		$storeData['email'] = $this->String->encodeEmail($storeData['email']);
+		$storeData['email'] = StringUtil::encodeEmail($storeData['email']);
 
 		//for smartphone phonenumber clean for href
 		$replaces = array(' ', ',','/','(',')','[',']','{','}','+');
@@ -135,7 +134,7 @@ class ModuleBmDetails extends \ModuleBm
 
 		// Open-Status
 		$storeData['open_status'] = $this->getCurrentOpenStatus($objLibrary);
-		$GLOBALS['TL_JAVASCRIPT'][] = '.'.BN_PATH.'/assets/js/bn_fe.js';
+		$GLOBALS['TL_JAVASCRIPT'][] = '.'.BM_PATH.'/assets/js/bn_fe.js';
 
 		// Google-Maps url-search-string
 		$storeData['gmapsplace'] = ampersand($storeData['strasse'].' '.$storeData['hausnummer'].', '.$storeData['plz'].' '.$storeData['ort']);

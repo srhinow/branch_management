@@ -1,29 +1,23 @@
 <?php
+namespace Srhinow\BranchManagement\Modules\Frontend;
 
 /**
  * PHP version 5
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
  * @author     Sven Rhinow
- * @package    bn_libraries (www.bibliotheken-niedersachsen.de/)
- * @license    commercial
+ * @package    branch_management
+ * @license    LGPL
  * @filesource
  */
 
-/**
- * Run in a custom namespace, so the class can be replaced
- */
-namespace Stores;
-
+use Contao\Input;
+use Contao\Session;
+use Srhinow\BranchManagement\Models\BmStoresModel;
 
 /**
  * Class ModuleBnSearchMap
- *
- * Front end module "bn search list".
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
- * @author     Sven Rhinow
- * @package    bn_libraries
  */
-class ModuleBmSearchMap extends \ModuleBm
+class ModuleBmSearchMap extends ModuleBm
 {
 
 	/**
@@ -65,10 +59,8 @@ class ModuleBmSearchMap extends \ModuleBm
 	 * Generate the module
 	 */
 	protected function compile()
-	{		
-		$this->import('FrontendUser','User');
-
-		$session = $this->Session->get('bnfilter')?: array();
+	{
+		$session = Session::getInstance()->get('bnfilter')?: array();
 		
 		if(strlen($session['geo_lat'])>0 && strlen($session['geo_lon'])>0)
 		{
@@ -85,26 +77,19 @@ class ModuleBmSearchMap extends \ModuleBm
 
 
 		// Get the total number of items
-		$intTotal = \BnLibrariesModel::countLibEntries($geodata,$session['distance']);
+		$intTotal = BmStoresModel::countStoreEntries($geodata,$session['distance']);
 
 		// Filter anwenden um die Gesamtanzahl zuermitteln
 		if($intTotal > 0)		
 		{
-			$libsObj = \BnLibrariesModel::findLibs($intTotal, 0, $geodata, $session['distance']);
+			$libsObj = BmStoresModel::findStores($intTotal, 0, $geodata, $session['distance']);
 			
 			$counter = 0;			
 			$libs = array();
 
 			while($libsObj->next())
 			{
-				// aktuell offen
-				if($session['only_open'] && $this->getCurrentOpenStatus($libsObj) != 'open') continue;
-				// bietet eine bestimmte Leistung an
-				if(strlen($session['leistungen']) > 0 && !$this->hasLeistung($libsObj)) continue;
-				// bietet eine bestimmte Medienart an
-				if(strlen($session['medien']) > 0 && !$this->hasMedia($libsObj)) continue;
-
-				//Detail-Url
+			    //Detail-Url
 				if($this->jumpTo)
 				{
 					$objDetailPage = \PageModel::findByPk($this->jumpTo);	
@@ -134,10 +119,10 @@ class ModuleBmSearchMap extends \ModuleBm
 		if( $geodata['lat'] == '' ) $geodata['lat'] = 52.4544218;
 		if( $geodata['lon'] == '') $geodata['lon'] = 9.918507699999999;
 
-		$GLOBALS['TL_JAVASCRIPT'][] = '.'.BN_PATH.'/assets/js/bn_fe.js';
+		$GLOBALS['TL_JAVASCRIPT'][] = '.'.BM_PATH.'/assets/js/bn_fe.js';
 		
 		$this->Template->libs = $libs;
-		$this->Template->filterActive = \Input::get('s') ? true : false;
+		$this->Template->filterActive = Input::get('s') ? true : false;
 		$this->Template->geodata = $geodata;
 		$this->Template->zoomlevel = count($session) == 0 ? 7 : 9;
 		$this->Template->totalItems = $intTotal;

@@ -22,13 +22,6 @@
 
 /**
  * -------------------------------------------------------------------------
- * HOOKS
- * -------------------------------------------------------------------------
- */
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('feBmHooks', 'replaceBmInsertTags');
-
-/**
- * -------------------------------------------------------------------------
  * Front END MODULES
  * -------------------------------------------------------------------------
  */
@@ -43,6 +36,13 @@ array_insert($GLOBALS['FE_MOD'], 2, array
 		'bm_edit_entry'    => 'ModuleBmEditEntry',
 	)
 ));
+
+/**
+ * -------------------------------------------------------------------------
+ * MODELS
+ * -------------------------------------------------------------------------
+ */
+$GLOBALS['TL_MODELS']['tl_bm_stores'] = Srhinow\BranchManagement\Models\BmStoresModel::class;
 
 /**
  * -------------------------------------------------------------------------
@@ -107,3 +107,10 @@ if ($_GET['do'] == 'tl_bm_setup')
 
 $GLOBALS['BE_MOD']['accounts']['member']['stylesheet'] = 'system/modules/branch_management/assets/css/be.css';
 $GLOBALS['BE_MOD']['accounts']['member']['csvMemberExport'] = array('beCSVExport', 'csvMemberExport');
+
+/**
+ * -------------------------------------------------------------------------
+ * HOOKS
+ * -------------------------------------------------------------------------
+ */
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('feBmHooks', 'replaceBmInsertTags');

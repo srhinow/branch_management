@@ -1,17 +1,21 @@
 <?php
+namespace Srhinow\BranchManagement\Dca;
 
 /**
  * PHP version 5
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
  * @author     Sven Rhinow
- * @package    x_bzn_custom (spezielle Modifikationen für die Büchereizentrale Niedersachsen)
- * @license    commercial
+ * @package    branch_management
+ * @license    LGPL
  * @filesource
  */
 
 /**
  * Table tl_member
  */
+use Contao\Database;
+use Contao\DataContainer;
+
 $GLOBALS['TL_DCA']['tl_member']['list']['label']['fields'] = array('icon', 'store_name', 'lastname', 'username');
 
 /**
@@ -46,7 +50,7 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['store_id'] = array
     'sorting'                 => true,
     'inputType'               => 'select',
     // 'foreignKey'			=> 'tl_bm_stores.filialsname',
-    'options_callback'        => array('tl_bm_member', 'getStoresOptions'),
+    'options_callback'        => array('BmMember', 'getStoresOptions'),
     'eval'                    => array('includeBlankOption'=>true, 'chosen'=>true, 'feEditable'=>true, 'feViewable'=>true, 'feGroup'=>'address','tl_class'=>'long'),
     'sql'                     => "int(10) unsigned NOT NULL default '0'"
 );
@@ -84,7 +88,7 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['store_name'] = array
  * @author     Leo Feyer <https://contao.org>
  * @package    Controller
  */
-class tl_bm_member extends tl_member
+class BmMember extends \tl_member
 {
 
 	/**
@@ -93,85 +97,40 @@ class tl_bm_member extends tl_member
 	public function __construct()
 	{
 		parent::__construct();
-		$this->import('BackendUser', 'User');
 	}
 
 	public function get_states(DataContainer $dc)
 	{
 		$varValues = array();
 
-		$all = $this->Database->prepare('SELECT s.* FROM `state` s')->execute();
+		$all = Database::getInstance()->prepare('SELECT s.* FROM `state` s')->execute();
 		
 		while($all->next())
 		{
-			$varValue[$all->id] = $all->name;
+            $varValues[$all->id] = $all->name;
 		}
-
-		return $varValue;
+		return $varValues;
 	}
 
     /**
-	 * get custom view from library-item-options
-	 * @param object
-	 * @throws Exception
-	 */
+     * get custom view from library-item-options
+     * @param $dc
+     * @return array
+     */
 	public function getStoresOptions($dc)
 	{
             $varValue = array();
             $groupID = 1;
 
-            $all = $this->Database->prepare('SELECT * FROM `tl_bm_stores`  ORDER BY `ort` ASC')
+            $all = Database::getInstance()->prepare('SELECT * FROM `tl_bm_stores`  ORDER BY `ort` ASC')
 				  ->execute(1);
+
             while($all->next())
             {
 				$varValue[$all->id] = $all->plz.' '.$all->ort.' ('.$all->filialsname.' '.$all->zweigstellenname.')';
             }
 
 	    return $varValue;
-	}	
-
-	/**
-	 * fill librarie fields
-	 * @param object
-	 * @throws Exception
-	 */
-	public function fillLibraryFields($varValue, $dc)
-	{
-		if (TL_MODE == 'BE')
-		{			
-			if(strlen($varValue) <= 0) return $varValue;
-			
-			//nur neu speichern wenn sich der Eintrag geändert hat
-			// if($varValue == $dc->activeRecord->library_id) return $varValue;
-
-			$result = $this->Database->prepare('SELECT * FROM `tl_bm_stores` WHERE `id`=?')
-						    ->limit(1)
-						    ->execute(\Input::post('library_id') );
-
-			$set = array
-			(
-				'store_id' => $dc->activeRecord->library_id,
-				'store_name' => $result->filialsname,
-				'postal' => $result->plz,
-				'city' => $result->ort,
-				'street' => $result->strasse.' '.$result->hausnummer,
-				'state' => $result->stadtteil,
-				'country' => 'de',
-				'phone' => $result->telefon,
-				'fax' => $result->fax,
-				'email' => $result->email,
-				'website' => $result->website,
-
-				'fillfields' => ''
-			);
-
-			$this->Database->prepare('UPDATE `tl_member` %s WHERE `id`=?')
-				       ->set($set)
-				       ->execute($dc->id);
-
-			$this->reload();
-	    }
-	    return $varValue;
-	}	
+	}
 }
 

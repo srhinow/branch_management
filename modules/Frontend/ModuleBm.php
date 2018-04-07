@@ -1,31 +1,19 @@
 <?php
+namespace Srhinow\BranchManagement\Modules\Frontend;
 
 /**
- * Contao Open Source CMS
+ * @package branch_management
  *
- * Copyright (c) 2005-2014 Leo Feyer
  *
- * @package ModuleBm
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
+use Contao\Module;
+use Contao\PageModel;
 
 /**
- * Run in a custom namespace, so the class can be replaced
+ * Class ModuleBm
  */
-namespace Stores;
-
-
-/**
- * Class ModuleBn
- *
- * Parent class for news modules.
- * @copyright  Leo Feyer 2005-2014
- * @author     Leo Feyer <https://contao.org>
- * @package    News
- */
-abstract class ModuleBm extends \Module
+abstract class ModuleBm extends Module
 {
 
 	/**
@@ -48,7 +36,7 @@ abstract class ModuleBm extends \Module
 		//Detail-Url
 		if($this->jumpTo)
 		{
-			$objDetailPage = \PageModel::findByPk($this->jumpTo);
+			$objDetailPage = PageModel::findByPk($this->jumpTo);
 			$objTemplate->detailUrl = ampersand( $this->generateFrontendUrl($objDetailPage->row(),'/'.$objStore->alias) );			
 		}
 

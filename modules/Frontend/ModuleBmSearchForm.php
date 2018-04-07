@@ -1,29 +1,25 @@
 <?php
+namespace Srhinow\BranchManagement\Modules\Frontend;
 
 /**
  * PHP version 5
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
  * @author     Sven Rhinow
- * @package    bm_libraries (www.bibliotheken-niedersachsen.de/)
- * @license    commercial
+ * @package    branch_management
+ * @license    LGPL
  * @filesource
  */
 
-/**
- * Run in a custom namespace, so the class can be replaced
- */
-namespace Stores;
+use Contao\BackendTemplate;
+use Contao\Database;
+use Contao\Input;
+use Contao\PageModel;
+use Srhinow\BranchManagement\Models\BmStoresModel;
 
-
 /**
- * Class ModuleBnSearchRegion
- *
- * Front end module "bn search list".
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
- * @author     Sven Rhinow
- * @package    branch_management
+ * Class ModuleBmSearchForm
  */
-class ModuleBmSearchForm extends \ModuleBm
+class ModuleBmSearchForm extends ModuleBm
 {
 
 	/**
@@ -41,9 +37,9 @@ class ModuleBmSearchForm extends \ModuleBm
 	{
 		if (TL_MODE == 'BE')
 		{
-			$objTemplate = new \BackendTemplate('be_wildcard');
+			$objTemplate = new BackendTemplate('be_wildcard');
 
-			$objTemplate->wildcard = '### Filial-REGION-SUCHE ###';
+			$objTemplate->wildcard = '### FILIAL-REGION-SUCHE ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;
@@ -76,8 +72,6 @@ class ModuleBmSearchForm extends \ModuleBm
 	 */
 	protected function compile()
 	{
-		$this->import('FrontendUser','User');
-
 		$this->Template->session = false;
 		$session = $this->Session->get('bmfilter')?: array();
 
@@ -87,11 +81,10 @@ class ModuleBmSearchForm extends \ModuleBm
 			if($this->Input->post('filter_reset') == 1)
 			{
 				$session = array();
-
 			}
 			else
 			{
-				$geodata = $this->getGeoDataFromCurrentPosition(urlencode(\Input::post('plzcity') ));
+				$geodata = $this->getGeoDataFromCurrentPosition(urlencode(Input::post('plzcity') ));
 
 				$session = array
 				(
@@ -112,7 +105,7 @@ class ModuleBmSearchForm extends \ModuleBm
 
 			if($this->jumpTo)
 			{
-				$objDetailPage = \PageModel::findByPk($this->jumpTo);
+				$objDetailPage = PageModel::findByPk($this->jumpTo);
 				$listUrl = ampersand( $this->generateFrontendUrl($objDetailPage->row()) );
 				$this->redirect($listUrl);
 			}
@@ -134,19 +127,18 @@ class ModuleBmSearchForm extends \ModuleBm
 
 
 		// Get the total number of items
-		$intTotal = \BmStoresModel::countStoreEntries($geodata,$session['distance']);
+		$intTotal = BmStoresModel::countStoreEntries($geodata,$session['distance']);
 
 		// Filter anwenden um die Gesamtanzahl zuermitteln
 		if($intTotal > 0)
 		{
-			$filterStoresObj = \BmStoresModel::findStores($intTotal, 0, $geodata, $session['distance']);
+			$filterStoresObj = BmStoresModel::findStores($intTotal, 0, $geodata, $session['distance']);
 
 			$counter = 0;
 			$idArr = array();
 
 			while($filterStoresObj->next())
-			{
-				
+            {
 				// aktuell offen
 				if($session['only_open'] && $this->getCurrentOpenStatus($filterStoresObj) != 'open') continue;
 				
@@ -198,7 +190,8 @@ class ModuleBmSearchForm extends \ModuleBm
 
 		//Kategorien-Optionen
 		$categoriesArr = array();
-		$cObj = $this->Database->prepare('SELECT `id`,`title` FROM `tl_bm_stores_categories` ORDER BY `sorting` ASC')->execute();
+		$cObj = Database::getInstance()->prepare('SELECT `id`,`title` FROM `tl_bm_stores_categories` ORDER BY `sorting` ASC')->execute();
+
 		if($cObj->numRows > 0)
 		{
 			while($cObj->next())
@@ -212,7 +205,6 @@ class ModuleBmSearchForm extends \ModuleBm
 
 	public function generateAjax()
 	{
-
 		$plzort = trim($_GET['term']);
 
 	   if((strlen($plzort) >= 2) && (strlen($plzort) <= 10))
@@ -220,15 +212,14 @@ class ModuleBmSearchForm extends \ModuleBm
 			//prüfen ob es eine Zahl ist (plz)
 			if (is_numeric($plzort))
 			{
-			    $resObj = $this->Database->prepare("SELECT `zc_zip`, `zc_location_name` FROM `zip_coordinates` WHERE `zc_zip` LIKE ?")
+			    $resObj = Database::getInstance()->prepare("SELECT `zc_zip`, `zc_location_name` FROM `zip_coordinates` WHERE `zc_zip` LIKE ?")
 						  ->limit(50)
 						  ->execute($plzort.'%');
 			}
 			else{
-			    $resObj = $this->Database->prepare("SELECT `zc_zip`, `zc_location_name` FROM `zip_coordinates` WHERE `zc_location_name` LIKE ?")
+			    $resObj = Database::getInstance()->prepare("SELECT `zc_zip`, `zc_location_name` FROM `zip_coordinates` WHERE `zc_location_name` LIKE ?")
 						  ->limit(50)
 						  ->execute($plzort.'%');
-
 			}
 
 			if ($resObj->numRows > 0)

@@ -1,16 +1,20 @@
 <?php
+namespace Srhinow\BranchManagement\Dca;
+
 /**
  * PHP version 5
- * @copyright  Sven Rhinow Webentwicklung 2014 <http://www.sr-tag.de>
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
  * @author     Sven Rhinow
- * @package    bn_libraries (www.filialen-niedersachsen.de/)
- * @license    commercial
+ * @package    branch_management
+ * @license    LGPL
  * @filesource
  */
 
 /**
  * Palettes
  */
+use Contao\Backend;
+
 $GLOBALS['TL_DCA']['tl_module']['palettes']['bm_search_form'] 		= '{title_legend},name,headline,type;{config_legend},jumpTo;{template_legend:hide},mod_bm_template;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['bm_search_list'] 		= '{title_legend},name,headline,type;{config_legend},jumpTo,numberOfItems,perPage;{template_legend:hide},item_template,imgSize;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['bm_search_map'] 		= '{title_legend},name,headline,type;{config_legend},jumpTo;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
@@ -22,7 +26,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['item_template'] = array
 	'default'                 => 'item_list_html',
 	'exclude'                 => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_bm', 'getItemTemplates'),
+	'options_callback'        => array('BmModule', 'getItemTemplates'),
 	'eval'                    => array('tl_class'=>'w50'),
 	'sql'                     => "varchar(32) NOT NULL default ''"
 );
@@ -33,20 +37,15 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['mod_bm_template'] = array
 	'default'                 => 'mod_bn_search_form',
 	'exclude'                 => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_bm', 'getModulTemplates'),
+	'options_callback'        => array('BmModule', 'getModulTemplates'),
 	'eval'                    => array('tl_class'=>'w50'),
 	'sql'                     => "varchar(32) NOT NULL default ''"
 );
 
 /**
- * Class tl_module_bm
- *
- * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Leo Feyer 2005-2014
- * @author     Leo Feyer <https://contao.org>
- * @package    bn_libraries
+ * Class BmModule
  */
-class tl_module_bm extends Backend
+class BmModule extends Backend
 {
 	/**
 	 * Return all news templates as array
