@@ -29,11 +29,11 @@ array_insert($GLOBALS['FE_MOD'], 2, array
 (
 	'Stores' => array
 	(
-		'bm_search_form'    => 'ModuleBmSearchForm',
-		'bm_search_list'    => 'ModuleBmSearchList',
-		'bm_search_map'    => 'ModuleBmSearchMap',
-		'bm_details'    => 'ModuleBmDetails',
-		'bm_edit_entry'    => 'ModuleBmEditEntry',
+		'bm_search_form'    => 'Srhinow\BranchManagement\Modules\Frontend\ModuleBmSearchForm',
+		'bm_search_list'    => 'Srhinow\BranchManagement\Modules\Frontend\ModuleBmSearchList',
+		'bm_search_map'    => 'Srhinow\BranchManagement\Modules\Frontend\ModuleBmSearchMap',
+		'bm_details'    => 'Srhinow\BranchManagement\Modules\Frontend\ModuleBmDetails',
+		'bm_edit_entry'    => 'Srhinow\BranchManagement\Modules\Frontend\ModuleBmEditEntry',
 	)
 ));
 
@@ -113,4 +113,4 @@ $GLOBALS['BE_MOD']['accounts']['member']['csvMemberExport'] = array('beCSVExport
  * HOOKS
  * -------------------------------------------------------------------------
  */
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('feBmHooks', 'replaceBmInsertTags');
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('Srhinow\BranchManagement\Hooks\feBmHooks', 'replaceBmInsertTags');

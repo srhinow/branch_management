@@ -1,13 +1,16 @@
 <?php
+namespace Srhinow\BranchManagement\Hooks;
 
 /**
  * PHP version 5
- * @copyright  Sven Rhinow Webentwicklung 2015 <http://www.sr-tag.de>
+ * @copyright  Sven Rhinow Webentwicklung 2018 <http://www.sr-tag.de>
  * @author     Sven Rhinow
  * @package    branch_management
  * @license    LGPL
  * @filesource
  */
+use Contao\Frontend;
+use Srhinow\BranchManagement\Models\BmStoresModel;
 
 class feBmHooks extends Frontend
 {
@@ -42,18 +45,19 @@ class feBmHooks extends Frontend
 	        	case 'fullname':
 	        		if(!$storeIdAlias) return $objPage->$split[2];
 
-	   				$objStore = \BmStoresModel::findByIdOrAlias($storeIdAlias);
+	   				$objStore = BmStoresModel::findByIdOrAlias($storeIdAlias);
 
 	        		$fullname = $objStore->filialname;
 	        		return $fullname;
 	        	break;
 	        	case 'printbutton':
 
-	        		return (!$libId) ? '' : '<a href="javascript:window.print()" class="printbutton"><i class="fa fa-print"></i></a>';
+	        		return (!$storeIdAlias) ? '' : '<a href="javascript:window.print()" class="printbutton"><i class="fa fa-print"></i></a>';
 
 	        	break;
 	        	default:
-	        		return $objStore->$split[1];
+                    $objStore = BmStoresModel::findByIdOrAlias($storeIdAlias);
+	        		return $objStore->{$split[1]};
 	        }
 
 	    }

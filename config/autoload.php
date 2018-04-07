@@ -25,7 +25,7 @@ ClassLoader::addClasses(array
 (
 	// Classes
 	'beCSVExport'                                                  => 'system/modules/branch_management/classes/beCSVExport.php',
-	'feBmHooks'                                                    => 'system/modules/branch_management/classes/feBmHooks.php',
+	'Srhinow\BranchManagement\Hooks\feBmHooks'                     => 'system/modules/branch_management/classes/feBmHooks.php',
 
 	// Modules
 	'Srhinow\BranchManagement\Modules\Frontend\ModuleBmSearchMap'  => 'system/modules/branch_management/modules/Frontend/ModuleBmSearchMap.php',

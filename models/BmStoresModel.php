@@ -41,7 +41,7 @@ class BmStoresModel extends Model
 	{
 		$t = static::$strTable;
 
-		return static::findOneBy( $varId, $arrOptions);
+		return static::findByIdOrAlias( $varId, $arrOptions);
 	}	
 
 	/**
